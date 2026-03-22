@@ -1,6 +1,6 @@
 {
   "name": "openclaw-local-searxng-search",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "OpenClaw SearXNG meta-search engine plugin",
   "type": "module",
   "dependencies": {

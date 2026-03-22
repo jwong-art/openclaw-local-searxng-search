@@ -113,7 +113,7 @@ If you see plugin warnings and want to suppress them, you can add an `installs` 
       "openclaw-local-searxng-search": {
         "source": "path",
         "installPath": "~/.openclaw/extensions/openclaw-local-searxng-search",
-        "version": "1.0.0"
+        "version": "1.0.2"
       }
     }
   }
