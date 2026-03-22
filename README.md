@@ -1,5 +1,10 @@
 # OpenClaw Local SearXNG Search Plugin
 
+> **This plugin is also available on npm!**
+> Install with: `openclaw plugins install openclaw-local-searxng-search`
+> npm package: https://www.npmjs.com/package/openclaw-local-searxng-search
+
+
 A powerful, free web search plugin for OpenClaw that integrates a local SearXNG meta-search engine.
 
 ## Overview
@@ -8,7 +13,7 @@ This plugin enables OpenClaw to perform powerful web searches by leveraging a lo
 
 ## Features
 
-- **Direct OpenClaw Integration**: Seamlessly callable as an OpenClaw tool from any conversation or automation
+- **Direct OpenClaw Integration**: Seamlessly callable as an OpenClaw tool from any conversation or automation. This plugin provides its own `openclaw_local_searxng_search` tool and can replace OpenClaw's built-in `web_search` tool (which requires API keys, has limited engine options, and may incur usage fees for high volume).
 - **Multi-Engine Search**: Queries multiple search engines simultaneously through SearXNG (Google, Bing, DuckDuckGo, Brave, and more)
 - **Rich Categories**: Supports general web, images, videos, news, maps, music, IT/tech, files, books, science papers, social media, code repositories, packages, currency, weather, and translation
 - **Advanced Filtering**: Time-based filters (day/week/month/year), language selection, and safe search levels
@@ -21,6 +26,32 @@ This plugin enables OpenClaw to perform powerful web searches by leveraging a lo
 - **SearXNG**: A local SearXNG instance running locally or on a server
 - **Node.js**: Required for the plugin (usually included with OpenClaw)
 
+## Setting Up SearXNG
+
+Before using this plugin, you need a running SearXNG instance. Here's how to set it up:
+
+### Docker (Recommended)
+
+The fastest way to get started:
+
+```bash
+docker run -d -p 8080:8080 --name searxng ghcr.io/searxng/searxng:latest
+```
+
+This starts SearXNG with the default port `8080`. After running, verify it's working:
+
+```bash
+curl http://127.0.0.1:8080
+```
+
+### Manual Installation
+
+For other installation methods, see the [official SearXNG documentation](https://docs.searxng.org/).
+
+### Custom Port or Path
+
+If your SearXNG runs on a different port, domain, or path, you can configure the `baseUrl` later in the plugin settings.
+
 ## Installation
 
 ### 1. Install the Plugin
@@ -31,31 +62,20 @@ Copy the plugin to your OpenClaw extensions directory:
 cp -r openclaw-local-searxng-search ~/.openclaw/extensions/
 ```
 
-Or to the skills directory:
-
-```bash
-cp -r openclaw-local-searxng-search ~/.openclaw/workspace/skills/
-```
-
 ### 2. Install Dependencies
 
-The plugin requires `@sinclair` as a dependency:
+The plugin requires `@sinclair` as a dependency. **Make sure to run npm install:**
 
 ```bash
 cd ~/.openclaw/extensions/openclaw-local-searxng-search
 npm install
 ```
 
-Or if installed in skills:
-
-```bash
-cd ~/.openclaw/workspace/skills/openclaw-local-searxng-search
-npm install
-```
+> **Important:** Ensure the `@sinclair` package is installed at `~/.openclaw/extensions/openclaw-local-searxng-search/node_modules/@sinclair`. If you skip this step, the plugin may not work correctly.
 
 ### 3. Configure OpenClaw
 
-Add the plugin configuration to your OpenClaw config file (`~/.openclaw/openclaw.json`):
+Add the plugin configuration to your OpenClaw config file (`~/.claw/openclaw.json`):
 
 ```json
 {
@@ -67,6 +87,33 @@ Add the plugin configuration to your OpenClaw config file (`~/.openclaw/openclaw
           "baseUrl": "http://127.0.0.1:8080",
           "timeout": 30000
         }
+      }
+    }
+  }
+}
+```
+
+#### Optional: Suppress Plugin Warnings
+
+If you see plugin warnings and want to suppress them, you can add an `installs` entry. This is optional but recommended:
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "openclaw-local-searxng-search": {
+        "enabled": true,
+        "config": {
+          "baseUrl": "http://127.0.0.1:8080",
+          "timeout": 30000
+        }
+      }
+    },
+    "installs": {
+      "openclaw-local-searxng-search": {
+        "source": "path",
+        "installPath": "~/.openclaw/extensions/openclaw-local-searxng-search",
+        "version": "1.0.0"
       }
     }
   }
@@ -232,24 +279,29 @@ The `baseUrl` parameter is highly flexible. Here are examples:
 "baseUrl": "http://localhost:8080"
 ```
 
-## Setting Up SearXNG
+## Disabling OpenClaw Built-in web_search
 
-If you don't have SearXNG installed, here are quick setup options:
+If you want to fully replace OpenClaw's built-in `web_search` tool with this plugin, you can disable it in your config:
 
-### Docker (Recommended)
-
-```bash
-docker run -d -p 8080:8080 --name searxng ghcr.io/searxng/searxng:latest
+```json
+{
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": false
+      }
+    }
+  }
+}
 ```
 
-### Manual Installation
-
-See the [official SearXNG documentation](https://docs.searxng.org/) for installation guides.
+This is optional. When disabled, OpenClaw will no longer use its built-in `web_search` tool, and you can rely entirely on the free, multi-engine `openclaw_local_searxng_search` tool provided by this plugin.
 
 ## Troubleshooting
 
 **Plugin not loading?**
 - Make sure the plugin folder is in `~/.openclaw/extensions/` or skills directory
+- Make sure you ran `npm install` to fetch the `@sinclair` dependency
 - Check that OpenClaw has been restarted after adding the plugin
 
 **Search returns no results?**
